@@ -12,7 +12,7 @@ class App{
 		document.body.appendChild( container );
         
 		this.camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.1, 100 );
-		this.camera.position.set( 0, 4, 14 );
+		this.camera.position.set( 10, 10, 10 );
         
 		this.scene = new THREE.Scene();
         this.scene.background = new THREE.Color( 0xaaaaaa );
@@ -33,6 +33,8 @@ class App{
 		container.appendChild( this.renderer.domElement );
 		
         //Add code here
+        this.LoadingBar=new LoadingBar()
+        this.loadGLTF();
         
         
         this.controls = new OrbitControls( this.camera, this.renderer.domElement );
@@ -62,6 +64,26 @@ class App{
     
     loadGLTF(){
         const self = this;
+        const loader=new GLTFLoader().setPath('../../assets/')
+        loader.load(
+            'TV.glb',
+            function(gltf){
+                const desiredScale = new THREE.Vector3(2, 2, 2); // Scale factors for x, y, z
+
+                self.tv=gltf.scene;
+                self.tv.scale.copy(desiredScale);
+                self.scene.add(gltf.scene);
+                self.LoadingBar.visible=false;
+                self.renderer.setAnimationLoop(self.render.bind(self));
+            },
+            function(xhr){
+                self.LoadingBar.progress=xhr.loaded/xhr.total;
+            },
+            function(err){
+                console.log('An error happened');
+            }
+
+        )
     }
     
     loadFBX(){
@@ -74,7 +96,7 @@ class App{
     }
     
 	render( ) {   
-        this.chair.rotateY( 0.01 );
+        this.tv.rotateY( 0.01 );
         this.renderer.render( this.scene, this.camera );
     }
 }
