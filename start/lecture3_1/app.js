@@ -52,11 +52,31 @@ class App{
     }
     
     initScene(){
+        this.radius=0.08
+        this.room = new THREE.LineSegments(
+            new BoxLineGeometry(6,6,6,10,10,10),
+            new THREE.LineBasicMaterial({color:0x808080}));
+        this.room.geometry.translate(0,0,0);
+        this.scene.add(this.room);
+        const gemotary=new THREE.IcosahedronBufferGeometry(this.radius,2);
+        for (let index = 0; index < 200; index++) {
+            const element = new THREE.Mesh(gemotary,new THREE.MeshLambertMaterial({
+                color:Math.random()*0xFFFFFF
+        }))
+        element.position.x=this.random(-2,2)
+        element.position.y=this.random(-2,2)
+        element.position.z=this.random(-2,2)
+            this.room.add(element)
+        }
+
+
+
         
     }
     
     setupXR(){
-        
+        this.renderer.xr.enabled=true
+        document.body.appendChild(VRButton.createButton(this.renderer))
     }
     
     resize(){
