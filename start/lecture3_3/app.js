@@ -82,14 +82,35 @@ class App{
     
     setupXR(){
         this.renderer.xr.enabled = true;
-        
+        this.controllers=this.buildControllers();
+
         const button = new VRButton( this.renderer );
     }
     
     buildControllers(){
-        
+        const controllerModelFactory=new XRControllerModelFactory()
+        const gemotary=new THREE.BufferGeometry().setFromPoints([
+            new THREE.Vector3(0,0,0),
+            new THREE.Vector3(0,0,-1)
+        ])
+        const line =new THREE.Line(gemotary)
+        line.name='line';
+        line.scale.z=0;
+        const controllers=[];
+        for(let i=0;i<=1;i++){
+            const controller=this.renderer.xr.getController(i)
+            controller.add(line.clone());
+            controller.userData.select=false;
+            this.scene.add(controller);
+            controllers.push(controller);
+            const grip=this.renderer.xr.getControllerGrip(i);
+            grip.add(controllerModelFactory.createControllerModel(grip));
+            this.scene.add(grip)
+
+
     }
-    
+    return controllers;
+}
     handleController( controller ){
         
     }

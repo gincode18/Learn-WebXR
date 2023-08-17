@@ -76,6 +76,12 @@ class App{
 
             this.room.add( object );
         }
+        this.highlighy=new THREE.Mesh(geometry ,new THREE.MeshBasicMaterial({
+            color:0xAAAAAA,side:THREE.BackSide
+            
+        }) )
+        this.highlighy.scale.set(1.3,1.3,1.3)
+        this.scene.add(this.highlighy)
         
     }
     
@@ -83,9 +89,26 @@ class App{
         this.renderer.xr.enabled = true;
         
         const button = new VRButton( this.renderer );
+
         
         this.controllers = this.buildControllers();
-        
+
+        function onStart(){
+            this.children[0].scale.z=10;
+          
+            this.userData.selectPressed=true;
+
+        }
+        function onEnd(){
+            this.children[0].scale.z=0;
+            self.highlighy.visible=false;
+            this.userData.selectPressed=false;
+
+        }
+        this.controllers.forEach((controllers)=>{
+            controllers.addEventListener('selectstart',onStart)
+            controllers.addEventListener('selectend',onEnd)
+        })
     }
     
     buildControllers(){
@@ -118,6 +141,12 @@ class App{
     }
     
     handleController( controller ){
+        if(controller.userData.selectPressed){
+            controller.children[0].scale.z=10;
+            this.workingMatrix.identity().extractRotation(controller.matrixWorld)
+            this.raycaster.ray.direction.set(0,0,-1).applyMatrix4(controller.matrixWorld)
+            const intersects=this.raycaster.intersectObject(this.room.children)
+        }
         
     }
     
